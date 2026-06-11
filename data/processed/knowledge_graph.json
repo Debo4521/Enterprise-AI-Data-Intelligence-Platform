@@ -45,6 +45,48 @@
             "name": "doc_0003_chunk_0001",
             "properties": {
                 "document_id": "doc_0003",
+                "text_preview": "GlobalTech Corporation Quarterly Report\n\nRevenue increased by 22%.\n\nCustomer satisfaction reached 95%.\n\nThe AI department launched four new automation"
+            }
+        },
+        {
+            "id": "company_globaltech_corporation",
+            "type": "Company",
+            "name": "GlobalTech Corporation",
+            "properties": {}
+        },
+        {
+            "id": "department_marketing_department",
+            "type": "Department",
+            "name": "marketing department",
+            "properties": {}
+        },
+        {
+            "id": "metric_customer_satisfaction_reached_95percent",
+            "type": "BusinessMetric",
+            "name": "customer satisfaction reached 95%",
+            "properties": {}
+        },
+        {
+            "id": "metric_revenue_increased_by_22percent",
+            "type": "BusinessMetric",
+            "name": "revenue increased by 22%",
+            "properties": {}
+        },
+        {
+            "id": "doc_0003_chunk_0002",
+            "type": "Chunk",
+            "name": "doc_0003_chunk_0002",
+            "properties": {
+                "document_id": "doc_0003",
+                "text_preview": "reased by 8%.\n\nThe company plans to invest more in AI research next quarter."
+            }
+        },
+        {
+            "id": "doc_0004_chunk_0001",
+            "type": "Chunk",
+            "name": "doc_0004_chunk_0001",
+            "properties": {
+                "document_id": "doc_0004",
                 "text_preview": "Product Region  Sales\n Laptop  North  12000\n  Phone  South   8500\n Tablet   East   6000\nMonitor   West   9500"
             }
         }
@@ -84,10 +126,45 @@
             "source": "company_acme_corporation",
             "target": "metric_revenue_increased_by_15percent",
             "relationship": "HAS_METRIC"
+        },
+        {
+            "source": "doc_0003_chunk_0001",
+            "target": "company_globaltech_corporation",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "doc_0003_chunk_0001",
+            "target": "department_ai_department",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "doc_0003_chunk_0001",
+            "target": "department_marketing_department",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "doc_0003_chunk_0001",
+            "target": "metric_customer_satisfaction_reached_95percent",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "company_globaltech_corporation",
+            "target": "metric_customer_satisfaction_reached_95percent",
+            "relationship": "HAS_METRIC"
+        },
+        {
+            "source": "doc_0003_chunk_0001",
+            "target": "metric_revenue_increased_by_22percent",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "company_globaltech_corporation",
+            "target": "metric_revenue_increased_by_22percent",
+            "relationship": "HAS_METRIC"
         }
     ],
     "summary": {
-        "total_nodes": 7,
-        "total_edges": 7
+        "total_nodes": 13,
+        "total_edges": 14
     }
 }

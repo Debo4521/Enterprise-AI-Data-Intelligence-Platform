@@ -30,6 +30,52 @@
         "chunk_id": "doc_0003_chunk_0001",
         "document_id": "doc_0003",
         "chunk_index": 1,
+        "text": "GlobalTech Corporation Quarterly Report\n\nRevenue increased by 22%.\n\nCustomer satisfaction reached 95%.\n\nThe AI department launched four new automation projects.\n\nThe Marketing department expanded into three international markets.\n\nOperating costs decreased by 8%.\n\nThe company plans to invest more in",
+        "metadata": {
+            "file_name": "quarterly_report.txt",
+            "file_extension": ".txt",
+            "file_size_kb": 0.33,
+            "created_time": "2026-06-11T14:10:15.685663",
+            "modified_time": "2026-06-11T14:17:02.582269",
+            "absolute_path": "C:\\Users\\Owner\\Desktop\\Enterprise-AI-Data-Intelligence-Platform\\data\\raw\\quarterly_report.txt"
+        },
+        "entities": {
+            "companies": [
+                "GlobalTech Corporation"
+            ],
+            "departments": [
+                "AI department",
+                "marketing department"
+            ],
+            "business_metrics": [
+                "customer satisfaction reached 95%",
+                "revenue increased by 22%"
+            ]
+        }
+    },
+    {
+        "chunk_id": "doc_0003_chunk_0002",
+        "document_id": "doc_0003",
+        "chunk_index": 2,
+        "text": "reased by 8%.\n\nThe company plans to invest more in AI research next quarter.",
+        "metadata": {
+            "file_name": "quarterly_report.txt",
+            "file_extension": ".txt",
+            "file_size_kb": 0.33,
+            "created_time": "2026-06-11T14:10:15.685663",
+            "modified_time": "2026-06-11T14:17:02.582269",
+            "absolute_path": "C:\\Users\\Owner\\Desktop\\Enterprise-AI-Data-Intelligence-Platform\\data\\raw\\quarterly_report.txt"
+        },
+        "entities": {
+            "companies": [],
+            "departments": [],
+            "business_metrics": []
+        }
+    },
+    {
+        "chunk_id": "doc_0004_chunk_0001",
+        "document_id": "doc_0004",
+        "chunk_index": 1,
         "text": "Product Region  Sales\n Laptop  North  12000\n  Phone  South   8500\n Tablet   East   6000\nMonitor   West   9500",
         "metadata": {
             "file_name": "sales_report.csv",

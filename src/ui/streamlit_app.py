@@ -5,11 +5,15 @@ import streamlit as st
 
 CURRENT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = CURRENT_DIR.parents[1]
+
 AGENTS_DIR = PROJECT_ROOT / "src" / "agents"
+PIPELINE_DIR = PROJECT_ROOT / "src" / "pipeline"
 
 sys.path.insert(0, str(AGENTS_DIR))
+sys.path.insert(0, str(PIPELINE_DIR))
 
 from orchestrator_agent import OrchestratorAgent
+from auto_pipeline import AutoPipeline
 
 
 st.set_page_config(
@@ -38,13 +42,14 @@ with st.sidebar:
         "AI Critic",
         "RAG Evaluation",
         "Orchestrator Agent",
+        "Auto Pipeline",
     ]
 
     for module in modules:
         st.success(module)
 
     st.divider()
-    st.info("Version: MVP v1.0")
+    st.info("Version: MVP v1.1")
 
 
 tab1, tab2, tab3, tab4 = st.tabs(
@@ -76,9 +81,17 @@ with tab1:
                 file.write(uploaded_file.getbuffer())
 
         st.success(f"Uploaded {len(uploaded_files)} file(s) to data/raw.")
-        st.info(
-            "Next step: rerun the backend pipeline scripts to update ingestion, chunks, graph, embeddings, and FAISS index."
-        )
+
+        with st.spinner("Running automatic enterprise pipeline..."):
+            pipeline = AutoPipeline()
+            pipeline_success = pipeline.run()
+
+        if pipeline_success:
+            st.success(
+                "Enterprise pipeline completed successfully. You can now ask questions."
+            )
+        else:
+            st.error("Pipeline failed. Please check your uploaded files.")
 
     st.divider()
 
@@ -153,6 +166,9 @@ with tab4:
     st.code(
         """
 Enterprise Files
+        |
+        v
+Auto Pipeline
         |
         v
 Data Ingestion

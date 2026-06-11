@@ -1,0 +1,93 @@
+{
+    "nodes": [
+        {
+            "id": "doc_0001_chunk_0001",
+            "type": "Chunk",
+            "name": "doc_0001_chunk_0001",
+            "properties": {
+                "document_id": "doc_0001",
+                "text_preview": "Acme Corporation Quarterly Business Report\n\nRevenue increased by 15%.\n\nCustomer satisfaction reached 92%.\n\nThe AI department completed three major pro"
+            }
+        },
+        {
+            "id": "company_acme_corporation",
+            "type": "Company",
+            "name": "Acme Corporation",
+            "properties": {}
+        },
+        {
+            "id": "department_ai_department",
+            "type": "Department",
+            "name": "AI department",
+            "properties": {}
+        },
+        {
+            "id": "department_sales_department",
+            "type": "Department",
+            "name": "sales department",
+            "properties": {}
+        },
+        {
+            "id": "metric_customer_satisfaction_reached_92percent",
+            "type": "BusinessMetric",
+            "name": "customer satisfaction reached 92%",
+            "properties": {}
+        },
+        {
+            "id": "metric_revenue_increased_by_15percent",
+            "type": "BusinessMetric",
+            "name": "revenue increased by 15%",
+            "properties": {}
+        },
+        {
+            "id": "doc_0003_chunk_0001",
+            "type": "Chunk",
+            "name": "doc_0003_chunk_0001",
+            "properties": {
+                "document_id": "doc_0003",
+                "text_preview": "Product Region  Sales\n Laptop  North  12000\n  Phone  South   8500\n Tablet   East   6000\nMonitor   West   9500"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "source": "doc_0001_chunk_0001",
+            "target": "company_acme_corporation",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "doc_0001_chunk_0001",
+            "target": "department_ai_department",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "doc_0001_chunk_0001",
+            "target": "department_sales_department",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "doc_0001_chunk_0001",
+            "target": "metric_customer_satisfaction_reached_92percent",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "company_acme_corporation",
+            "target": "metric_customer_satisfaction_reached_92percent",
+            "relationship": "HAS_METRIC"
+        },
+        {
+            "source": "doc_0001_chunk_0001",
+            "target": "metric_revenue_increased_by_15percent",
+            "relationship": "MENTIONS"
+        },
+        {
+            "source": "company_acme_corporation",
+            "target": "metric_revenue_increased_by_15percent",
+            "relationship": "HAS_METRIC"
+        }
+    ],
+    "summary": {
+        "total_nodes": 7,
+        "total_edges": 7
+    }
+}

@@ -1,0 +1,48 @@
+[
+    {
+        "chunk_id": "doc_0001_chunk_0001",
+        "document_id": "doc_0001",
+        "chunk_index": 1,
+        "text": "Acme Corporation Quarterly Business Report\n\nRevenue increased by 15%.\n\nCustomer satisfaction reached 92%.\n\nThe AI department completed three major projects.\n\nThe sales department expanded into two new regions.",
+        "metadata": {
+            "file_name": "company_notes.txt",
+            "file_extension": ".txt",
+            "file_size_kb": 0.21,
+            "created_time": "2026-06-11T09:55:20.039065",
+            "modified_time": "2026-06-11T09:55:45.428622",
+            "absolute_path": "C:\\Users\\Owner\\Desktop\\Enterprise-AI-Data-Intelligence-Platform\\data\\raw\\company_notes.txt"
+        },
+        "entities": {
+            "companies": [
+                "Acme Corporation"
+            ],
+            "departments": [
+                "AI department",
+                "sales department"
+            ],
+            "business_metrics": [
+                "customer satisfaction reached 92%",
+                "revenue increased by 15%"
+            ]
+        }
+    },
+    {
+        "chunk_id": "doc_0003_chunk_0001",
+        "document_id": "doc_0003",
+        "chunk_index": 1,
+        "text": "Product Region  Sales\n Laptop  North  12000\n  Phone  South   8500\n Tablet   East   6000\nMonitor   West   9500",
+        "metadata": {
+            "file_name": "sales_report.csv",
+            "file_extension": ".csv",
+            "file_size_kb": 0.09,
+            "created_time": "2026-06-11T09:57:17.739806",
+            "modified_time": "2026-06-11T09:57:29.511445",
+            "absolute_path": "C:\\Users\\Owner\\Desktop\\Enterprise-AI-Data-Intelligence-Platform\\data\\raw\\sales_report.csv"
+        },
+        "entities": {
+            "companies": [],
+            "departments": [],
+            "business_metrics": []
+        }
+    }
+]

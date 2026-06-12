@@ -26,4 +26,6 @@ pyvis
 
 reportlab
 
+torch
+
 torchvision

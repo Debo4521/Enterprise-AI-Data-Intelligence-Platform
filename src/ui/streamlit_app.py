@@ -50,6 +50,16 @@ def render_bullets(items: list[str]):
         st.markdown(f"- {item}")
 
 
+def save_uploaded_file(uploaded_file, target_dir: Path) -> Path:
+    target_dir.mkdir(parents=True, exist_ok=True)
+    file_path = target_dir / uploaded_file.name
+
+    with open(file_path, "wb") as file:
+        file.write(uploaded_file.getbuffer())
+
+    return file_path
+
+
 st.set_page_config(
     page_title="Enterprise AI Data Intelligence Platform",
     page_icon="🧠",
@@ -85,7 +95,7 @@ with st.sidebar:
         st.success(module)
 
     st.divider()
-    st.info("Version: MVP v1.6")
+    st.info("Version: MVP v1.7")
 
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
@@ -106,17 +116,14 @@ with tab1:
         "Upload PDF, DOCX, CSV, TXT, or Excel files",
         type=["pdf", "docx", "csv", "txt", "xlsx"],
         accept_multiple_files=True,
+        key="ask_ai_uploader",
     )
 
     if uploaded_files:
         raw_data_path = PROJECT_ROOT / "data" / "raw"
-        raw_data_path.mkdir(parents=True, exist_ok=True)
 
         for uploaded_file in uploaded_files:
-            file_path = raw_data_path / uploaded_file.name
-
-            with open(file_path, "wb") as file:
-                file.write(uploaded_file.getbuffer())
+            save_uploaded_file(uploaded_file, raw_data_path)
 
         st.success(f"Uploaded {len(uploaded_files)} file(s) to data/raw.")
 
@@ -272,39 +279,60 @@ with tab4:
 
 with tab5:
     st.subheader("Compare Enterprise Documents")
+    st.info("Upload two enterprise documents, then compare their business metrics.")
 
-    file1 = st.text_input(
-        "First file",
-        value="company_notes.txt",
-        key="file1",
+    compare_file_1 = st.file_uploader(
+        "Upload first document",
+        type=["pdf", "docx", "csv", "txt", "xlsx"],
+        key="compare_file_1",
     )
 
-    file2 = st.text_input(
-        "Second file",
-        value="quarterly_report.txt",
-        key="file2",
+    compare_file_2 = st.file_uploader(
+        "Upload second document",
+        type=["pdf", "docx", "csv", "txt", "xlsx"],
+        key="compare_file_2",
     )
 
-    compare_button = st.button("Compare Documents", type="primary")
+    compare_button = st.button("Compare Uploaded Documents", type="primary")
 
     if compare_button:
-        with st.spinner("Comparing enterprise documents..."):
-            engine = ComparisonEngine()
-            result = engine.compare_files(file1, file2)
+        if compare_file_1 is None or compare_file_2 is None:
+            st.warning("Please upload two documents before comparing.")
+        else:
+            raw_data_path = PROJECT_ROOT / "data" / "raw"
 
-        st.success("Comparison completed.")
+            save_uploaded_file(compare_file_1, raw_data_path)
+            save_uploaded_file(compare_file_2, raw_data_path)
 
-        st.markdown("### Comparison Table")
-        st.table(result["comparison"])
+            st.success("Both files uploaded successfully.")
 
-        st.markdown("### Compared Files")
-        col1, col2 = st.columns(2)
+            with st.spinner("Running enterprise pipeline before comparison..."):
+                pipeline = AutoPipeline()
+                pipeline_success = pipeline.run()
 
-        with col1:
-            st.info(result["file_a"])
+            if pipeline_success:
+                with st.spinner("Comparing documents..."):
+                    engine = ComparisonEngine()
+                    result = engine.compare_files(
+                        compare_file_1.name,
+                        compare_file_2.name,
+                    )
 
-        with col2:
-            st.info(result["file_b"])
+                st.success("Comparison completed.")
+
+                st.markdown("### Comparison Table")
+                st.table(result["comparison"])
+
+                st.markdown("### Compared Files")
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.info(result["file_a"])
+
+                with col2:
+                    st.info(result["file_b"])
+            else:
+                st.error("Pipeline failed. Please check your uploaded files.")
 
 with tab6:
     st.subheader("System Architecture")

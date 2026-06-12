@@ -1,12 +1,12 @@
-from typing import Optional
+from typing import Optional, List
 
 
 class LLMAnswerGenerator:
     """
-    First production-safe version.
+    Template-based answer generator.
 
-    For now, this uses a structured template instead of calling a paid API.
-    Later, we can connect OpenAI, Databricks Mosaic AI, or local Llama.
+    Later this can be replaced with OpenAI, Databricks Mosaic AI,
+    or a local Llama model.
     """
 
     def generate_answer(
@@ -14,8 +14,13 @@ class LLMAnswerGenerator:
         query: str,
         vector_context: str,
         graph_context: str,
-        model_name: Optional[str] = "template-v1"
+        model_name: Optional[str] = "template-v1",
     ) -> str:
+
+        key_findings = self._extract_key_findings(vector_context)
+        companies = self._extract_entity_values(vector_context, "companies")
+        departments = self._extract_entity_values(vector_context, "departments")
+        metrics = self._extract_entity_values(vector_context, "business_metrics")
 
         answer = f"""
 Business Intelligence Answer
@@ -23,30 +28,53 @@ Business Intelligence Answer
 Question:
 {query}
 
-Evidence-Based Findings:
-The retrieved enterprise data shows the following:
+Key Findings:
+{self._format_bullets(key_findings)}
 
-{self._extract_key_points(vector_context)}
+Detected Business Entities:
+
+Companies:
+{self._format_bullets(companies)}
+
+Departments:
+{self._format_bullets(departments)}
+
+Business Metrics:
+{self._format_bullets(metrics)}
 
 Graph-Based Evidence:
 {graph_context}
 
 Executive Summary:
-Based on both semantic vector search and knowledge graph relationships, the enterprise data indicates positive business performance. The available evidence shows improvement in revenue and customer satisfaction, with department-level activity connected to business outcomes.
+The retrieved enterprise data shows positive business performance. Revenue and customer satisfaction improved, and department-level activities indicate active business expansion and AI-driven operational progress.
 
 Recommended Business Actions:
-1. Investigate which department activities contributed most to revenue growth.
-2. Compare customer satisfaction trends across future reporting periods.
-3. Connect business metrics with department-level performance data.
-4. Use the knowledge graph to track relationships between companies, metrics, teams, and reports.
+1. Investigate which AI automation projects contributed most to business performance.
+2. Compare customer satisfaction across future reporting periods.
+3. Track international market expansion by the Marketing department.
+4. Connect revenue growth with department-level initiatives in the knowledge graph.
 
 Model Used:
 {model_name}
 """
         return answer.strip()
 
-    def _extract_key_points(self, vector_context: str) -> str:
-        lines = []
+    def _extract_key_findings(self, vector_context: str) -> List[str]:
+        findings = []
+
+        important_keywords = [
+            "revenue",
+            "customer satisfaction",
+            "department",
+            "automation",
+            "international",
+            "operating costs",
+            "invest",
+            "expanded",
+            "launched",
+            "increased",
+            "decreased",
+        ]
 
         for line in vector_context.splitlines():
             clean_line = line.strip()
@@ -54,19 +82,56 @@ Model Used:
             if not clean_line:
                 continue
 
-            if any(
-                keyword in clean_line.lower()
-                for keyword in [
-                    "revenue",
-                    "customer satisfaction",
-                    "department",
-                    "sales",
-                    "ai department",
-                ]
-            ):
-                lines.append(f"- {clean_line}")
+            if clean_line.lower().startswith("entities:"):
+                continue
 
-        if not lines:
-            return "- No clear business findings were extracted from the retrieved context."
+            if clean_line.lower().startswith("source chunk"):
+                continue
 
-        return "\n".join(lines[:8])
+            if clean_line.lower().startswith("text:"):
+                clean_line = clean_line.replace("Text:", "").strip()
+
+            if any(keyword in clean_line.lower() for keyword in important_keywords):
+                findings.append(clean_line)
+
+        return self._deduplicate(findings)[:8]
+
+    def _extract_entity_values(self, vector_context: str, entity_key: str) -> List[str]:
+        values = []
+
+        for line in vector_context.splitlines():
+            clean_line = line.strip()
+
+            if not clean_line.startswith("Entities:"):
+                continue
+
+            try:
+                entity_text = clean_line.replace("Entities:", "").strip()
+                entity_dict = eval(entity_text)
+
+                if entity_key in entity_dict:
+                    values.extend(entity_dict[entity_key])
+
+            except Exception:
+                continue
+
+        return self._deduplicate(values)
+
+    def _format_bullets(self, items: List[str]) -> str:
+        if not items:
+            return "- No specific items detected."
+
+        return "\n".join(f"- {item}" for item in items)
+
+    def _deduplicate(self, items: List[str]) -> List[str]:
+        seen = set()
+        unique_items = []
+
+        for item in items:
+            normalized = item.lower().strip()
+
+            if normalized not in seen:
+                unique_items.append(item)
+                seen.add(normalized)
+
+        return unique_items

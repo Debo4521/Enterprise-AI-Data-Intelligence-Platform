@@ -49,7 +49,7 @@ with st.sidebar:
         st.success(module)
 
     st.divider()
-    st.info("Version: MVP v1.1")
+    st.info("Version: MVP v1.2")
 
 
 tab1, tab2, tab3, tab4 = st.tabs(
@@ -99,7 +99,7 @@ with tab1:
 
     query = st.text_input(
         "Enter your question",
-        value="What happened to revenue and customer satisfaction?",
+        value="What happened in quarterly_report.txt?",
     )
 
     run_button = st.button("Run Enterprise AI Analysis", type="primary")
@@ -115,7 +115,7 @@ with tab1:
         result = st.session_state["result"]
 
         st.subheader("Business Intelligence Answer")
-        st.write(result["final_answer"])
+        st.info(result["final_answer"])
 
 with tab2:
     st.subheader("Evaluation Dashboard")
@@ -136,6 +136,15 @@ with tab2:
 
         st.divider()
 
+        overall = evaluation["overall_enterprise_rag_score"]
+
+        if overall >= 0.85:
+            st.success("Low-risk answer: strong retrieval and evidence support.")
+        elif overall >= 0.6:
+            st.warning("Medium-risk answer: review retrieved evidence.")
+        else:
+            st.error("High-risk answer: weak evidence support.")
+
         st.subheader("System Status")
         st.json(
             {
@@ -151,13 +160,17 @@ with tab3:
     if "result" not in st.session_state:
         st.warning("Run an analysis first from the Ask AI tab.")
     else:
-        final_answer = st.session_state["result"]["final_answer"]
+        result = st.session_state["result"]
 
-        with st.expander("Full Answer Evidence"):
-            st.write(final_answer)
+        st.markdown("### Final Answer Evidence")
+        with st.expander("Open full business answer"):
+            st.write(result["final_answer"])
+
+        st.markdown("### Evaluation Evidence")
+        st.json(result["evaluation"])
 
         st.info(
-            "Next upgrade: we will show vector chunks and knowledge graph evidence separately."
+            "Next upgrade: separate vector chunks and knowledge graph evidence from the orchestrator response."
         )
 
 with tab4:

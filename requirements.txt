@@ -25,3 +25,5 @@ streamlit
 pyvis
 
 reportlab
+
+torchvision

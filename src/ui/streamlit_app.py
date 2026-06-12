@@ -2,18 +2,52 @@ import sys
 from pathlib import Path
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 CURRENT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = CURRENT_DIR.parents[1]
 
 AGENTS_DIR = PROJECT_ROOT / "src" / "agents"
 PIPELINE_DIR = PROJECT_ROOT / "src" / "pipeline"
+RAG_DIR = PROJECT_ROOT / "src" / "rag"
 
 sys.path.insert(0, str(AGENTS_DIR))
 sys.path.insert(0, str(PIPELINE_DIR))
+sys.path.insert(0, str(RAG_DIR))
 
 from orchestrator_agent import OrchestratorAgent
 from auto_pipeline import AutoPipeline
+from comparison_engine import ComparisonEngine
+
+
+def extract_section(text: str, section_title: str) -> list[str]:
+    lines = text.splitlines()
+    capture = False
+    items = []
+
+    for line in lines:
+        clean = line.strip()
+
+        if clean.startswith(section_title):
+            capture = True
+            continue
+
+        if capture and clean.endswith(":") and clean != section_title:
+            break
+
+        if capture and clean.startswith("-"):
+            items.append(clean.replace("-", "").strip())
+
+    return items
+
+
+def render_bullets(items: list[str]):
+    if not items:
+        st.caption("No items detected.")
+        return
+
+    for item in items:
+        st.markdown(f"- {item}")
 
 
 st.set_page_config(
@@ -43,20 +77,24 @@ with st.sidebar:
         "RAG Evaluation",
         "Orchestrator Agent",
         "Auto Pipeline",
+        "Graph Visualization",
+        "Document Comparison",
     ]
 
     for module in modules:
         st.success(module)
 
     st.divider()
-    st.info("Version: MVP v1.2")
+    st.info("Version: MVP v1.6")
 
 
-tab1, tab2, tab3, tab4 = st.tabs(
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
     [
         "Ask AI",
         "Evaluation Dashboard",
         "Retrieved Evidence",
+        "Knowledge Graph",
+        "Compare Documents",
         "System Architecture",
     ]
 )
@@ -125,6 +163,7 @@ with tab2:
     else:
         result = st.session_state["result"]
         evaluation = result["evaluation"]
+        critic = result["critic_result"]
 
         col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -136,14 +175,17 @@ with tab2:
 
         st.divider()
 
-        overall = evaluation["overall_enterprise_rag_score"]
+        risk_level = critic["risk_level"]
 
-        if overall >= 0.85:
+        if risk_level == "low":
             st.success("Low-risk answer: strong retrieval and evidence support.")
-        elif overall >= 0.6:
+        elif risk_level == "medium":
             st.warning("Medium-risk answer: review retrieved evidence.")
         else:
             st.error("High-risk answer: weak evidence support.")
+
+        st.subheader("AI Critic Summary")
+        st.write(critic["critic_summary"])
 
         st.subheader("System Status")
         st.json(
@@ -151,6 +193,7 @@ with tab2:
                 "query": result["query"],
                 "status": result["status"],
                 "retrieval_strategy": result["retrieval_strategy"],
+                "risk_level": critic["risk_level"],
             }
         )
 
@@ -161,19 +204,109 @@ with tab3:
         st.warning("Run an analysis first from the Ask AI tab.")
     else:
         result = st.session_state["result"]
+        final_answer = result["final_answer"]
+        critic = result["critic_result"]
 
-        st.markdown("### Final Answer Evidence")
-        with st.expander("Open full business answer"):
+        st.markdown("### Vector Search Evidence")
+
+        with st.expander("Open vector context"):
+            st.text(result["vector_context"])
+
+        st.markdown("### Structured Knowledge Graph Evidence")
+
+        companies = extract_section(final_answer, "Companies:")
+        departments = extract_section(final_answer, "Departments:")
+        metrics = extract_section(final_answer, "Business Metrics:")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown("#### Companies")
+            render_bullets(companies)
+
+        with col2:
+            st.markdown("#### Departments")
+            render_bullets(departments)
+
+        with col3:
+            st.markdown("#### Business Metrics")
+            render_bullets(metrics)
+
+        st.markdown("### Raw Knowledge Graph Context")
+
+        with st.expander("Open graph context"):
+            st.text(result["graph_context"])
+
+        st.markdown("### AI Critic Evidence")
+
+        col1, col2 = st.columns(2)
+
+        col1.metric("Confidence Score", critic["confidence_score"])
+        col2.metric("Risk Level", critic["risk_level"])
+
+        st.json(critic["checks"])
+
+        st.markdown("### Final Business Answer")
+
+        with st.expander("Open final answer"):
             st.write(result["final_answer"])
 
-        st.markdown("### Evaluation Evidence")
-        st.json(result["evaluation"])
+with tab4:
+    st.subheader("Interactive Knowledge Graph")
 
-        st.info(
-            "Next upgrade: separate vector chunks and knowledge graph evidence from the orchestrator response."
+    graph_path = PROJECT_ROOT / "data" / "processed" / "knowledge_graph.html"
+
+    if graph_path.exists():
+        with open(graph_path, "r", encoding="utf-8") as file:
+            graph_html = file.read()
+
+        components.html(
+            graph_html,
+            height=700,
+            scrolling=True,
+        )
+    else:
+        st.warning(
+            "Knowledge graph visualization not found. Run graph_visualizer.py first."
         )
 
-with tab4:
+with tab5:
+    st.subheader("Compare Enterprise Documents")
+
+    file1 = st.text_input(
+        "First file",
+        value="company_notes.txt",
+        key="file1",
+    )
+
+    file2 = st.text_input(
+        "Second file",
+        value="quarterly_report.txt",
+        key="file2",
+    )
+
+    compare_button = st.button("Compare Documents", type="primary")
+
+    if compare_button:
+        with st.spinner("Comparing enterprise documents..."):
+            engine = ComparisonEngine()
+            result = engine.compare_files(file1, file2)
+
+        st.success("Comparison completed.")
+
+        st.markdown("### Comparison Table")
+        st.table(result["comparison"])
+
+        st.markdown("### Compared Files")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.info(result["file_a"])
+
+        with col2:
+            st.info(result["file_b"])
+
+with tab6:
     st.subheader("System Architecture")
 
     st.code(

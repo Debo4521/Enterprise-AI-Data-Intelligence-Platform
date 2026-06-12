@@ -7,12 +7,15 @@ PROJECT_ROOT = CURRENT_DIR.parent.parent
 
 RAG_DIR = PROJECT_ROOT / "src" / "rag"
 EVALUATION_DIR = PROJECT_ROOT / "src" / "evaluation"
+AGENTS_DIR = PROJECT_ROOT / "src" / "agents"
 
 sys.path.append(str(RAG_DIR))
 sys.path.append(str(EVALUATION_DIR))
+sys.path.append(str(AGENTS_DIR))
 
 from graph_rag import GraphRAG
 from rag_evaluator import RAGEvaluator
+from critic_agent import CriticAgent
 
 
 class OrchestratorAgent:
@@ -20,15 +23,26 @@ class OrchestratorAgent:
     def __init__(self):
         self.graph_rag = GraphRAG()
         self.evaluator = RAGEvaluator()
+        self.critic = CriticAgent()
 
     def run(self, query: str) -> Dict[str, Any]:
         rag_result = self.graph_rag.answer(query)
+
+        critic_result = self.critic.evaluate(
+            answer=rag_result["answer"],
+            vector_context=rag_result["vector_context"],
+            graph_context=rag_result["graph_context"],
+        )
+
         evaluation_result = self.evaluator.evaluate(query)
 
         return {
             "query": query,
             "final_answer": rag_result["answer"],
             "retrieval_strategy": rag_result["retrieval_strategy"],
+            "vector_context": rag_result["vector_context"],
+            "graph_context": rag_result["graph_context"],
+            "critic_result": critic_result,
             "evaluation": {
                 "retrieval_score": evaluation_result["retrieval_score"],
                 "graph_usage_score": evaluation_result["graph_usage_score"],
@@ -46,19 +60,12 @@ if __name__ == "__main__":
 
     agent = OrchestratorAgent()
 
-    query = "What happened to revenue and customer satisfaction?"
+    query = "What happened in quarterly_report.txt?"
 
     result = agent.run(query)
 
     print("\nEnterprise AI Orchestrator Results")
     print("=" * 50)
-    print(f"Query: {result['query']}")
-    print(f"Status: {result['status']}")
-    print(f"Retrieval Strategy: {result['retrieval_strategy']}")
-
-    print("\nEvaluation:")
-    for key, value in result["evaluation"].items():
-        print(f"{key}: {value}")
-
-    print("\nFinal Answer:")
     print(result["final_answer"])
+    print("\nCritic Result:")
+    print(result["critic_result"])

@@ -1,4 +1,5 @@
-from typing import Dict, Any, List
+import re
+from typing import Dict, Any
 
 
 class CriticAgent:
@@ -10,18 +11,18 @@ class CriticAgent:
         graph_context: str
     ) -> Dict[str, Any]:
 
+        combined_text = f"{answer}\n{vector_context}\n{graph_context}".lower()
+
         checks = {
-            "revenue_supported": self._contains_evidence(
-                answer,
-                vector_context,
-                ["revenue", "15"]
+            "revenue_supported": self._metric_supported(
+                combined_text,
+                metric_name="revenue",
             ),
-            "customer_satisfaction_supported": self._contains_evidence(
-                answer,
-                vector_context,
-                ["customer satisfaction", "92"]
+            "customer_satisfaction_supported": self._metric_supported(
+                combined_text,
+                metric_name="customer satisfaction",
             ),
-            "graph_context_used": bool(graph_context.strip()),
+            "graph_context_available": bool(graph_context.strip()),
             "has_recommendations": "recommended business actions" in answer.lower(),
         }
 
@@ -41,19 +42,25 @@ class CriticAgent:
             "checks": checks,
             "confidence_score": confidence_score,
             "risk_level": risk_level,
-            "critic_summary": self._generate_summary(checks, confidence_score, risk_level),
+            "critic_summary": self._generate_summary(
+                checks,
+                confidence_score,
+                risk_level
+            ),
         }
 
-    def _contains_evidence(
+    def _metric_supported(
         self,
-        answer: str,
-        context: str,
-        required_terms: List[str]
+        text: str,
+        metric_name: str
     ) -> bool:
 
-        combined_text = f"{answer} {context}".lower()
+        if metric_name not in text:
+            return False
 
-        return all(term.lower() in combined_text for term in required_terms)
+        percentage_pattern = r"\d+%"
+
+        return bool(re.search(percentage_pattern, text))
 
     def _generate_summary(
         self,
@@ -86,20 +93,21 @@ if __name__ == "__main__":
     critic = CriticAgent()
 
     sample_answer = """
-    Revenue increased by 15%.
-    Customer satisfaction reached 92%.
+    Revenue increased by 22%.
+    Customer satisfaction reached 95%.
+
     Recommended Business Actions:
-    Continue tracking customer satisfaction.
+    Continue tracking business metrics.
     """
 
     sample_vector_context = """
-    Revenue increased by 15%.
-    Customer satisfaction reached 92%.
+    Revenue increased by 22%.
+    Customer satisfaction reached 95%.
     """
 
     sample_graph_context = """
-    BusinessMetric: revenue increased by 15%
-    BusinessMetric: customer satisfaction reached 92%
+    BusinessMetric: revenue increased by 22%
+    BusinessMetric: customer satisfaction reached 95%
     """
 
     result = critic.evaluate(

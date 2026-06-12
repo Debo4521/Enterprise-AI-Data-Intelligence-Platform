@@ -422,7 +422,7 @@
             "file_extension": ".txt",
             "file_size_kb": 0.33,
             "created_time": "2026-06-11T14:10:15.685663",
-            "modified_time": "2026-06-12T09:48:47.442133",
+            "modified_time": "2026-06-12T12:11:48.517949",
             "absolute_path": "C:\\Users\\Owner\\Desktop\\Enterprise-AI-Data-Intelligence-Platform\\data\\raw\\quarterly_report.txt"
         },
         "entities": {
@@ -434,8 +434,8 @@
                 "marketing department"
             ],
             "business_metrics": [
-                "customer satisfaction reached 95%",
-                "revenue increased by 22%"
+                "revenue increased by 22%",
+                "customer satisfaction reached 95%"
             ]
         },
         "embedding_model": "BAAI/bge-small-en-v1.5",
@@ -836,7 +836,7 @@
             "file_extension": ".txt",
             "file_size_kb": 0.33,
             "created_time": "2026-06-11T14:10:15.685663",
-            "modified_time": "2026-06-12T09:48:47.442133",
+            "modified_time": "2026-06-12T12:11:48.517949",
             "absolute_path": "C:\\Users\\Owner\\Desktop\\Enterprise-AI-Data-Intelligence-Platform\\data\\raw\\quarterly_report.txt"
         },
         "entities": {

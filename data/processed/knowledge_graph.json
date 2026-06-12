@@ -61,15 +61,15 @@
             "properties": {}
         },
         {
-            "id": "metric_customer_satisfaction_reached_95percent",
-            "type": "BusinessMetric",
-            "name": "customer satisfaction reached 95%",
-            "properties": {}
-        },
-        {
             "id": "metric_revenue_increased_by_22percent",
             "type": "BusinessMetric",
             "name": "revenue increased by 22%",
+            "properties": {}
+        },
+        {
+            "id": "metric_customer_satisfaction_reached_95percent",
+            "type": "BusinessMetric",
+            "name": "customer satisfaction reached 95%",
             "properties": {}
         },
         {
@@ -144,22 +144,22 @@
         },
         {
             "source": "doc_0003_chunk_0001",
-            "target": "metric_customer_satisfaction_reached_95percent",
+            "target": "metric_revenue_increased_by_22percent",
             "relationship": "MENTIONS"
         },
         {
             "source": "company_globaltech_corporation",
-            "target": "metric_customer_satisfaction_reached_95percent",
+            "target": "metric_revenue_increased_by_22percent",
             "relationship": "HAS_METRIC"
         },
         {
             "source": "doc_0003_chunk_0001",
-            "target": "metric_revenue_increased_by_22percent",
+            "target": "metric_customer_satisfaction_reached_95percent",
             "relationship": "MENTIONS"
         },
         {
             "source": "company_globaltech_corporation",
-            "target": "metric_revenue_increased_by_22percent",
+            "target": "metric_customer_satisfaction_reached_95percent",
             "relationship": "HAS_METRIC"
         }
     ],
